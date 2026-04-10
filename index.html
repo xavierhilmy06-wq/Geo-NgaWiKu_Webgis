@@ -9,12 +9,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel="stylesheet" />
-    <link rel="stylesheet" href="peta_ngawi/css/leaflet.css" />
-    <link rel="stylesheet" href="peta_ngawi/css/L.Control.Layers.Tree.css" />
-    <link rel="stylesheet" href="peta_ngawi/css/qgis2web.css" />
-    <link rel="stylesheet" href="peta_ngawi/css/fontawesome-all.min.css" />
-    <link rel="stylesheet" href="peta_ngawi/css/leaflet.photon.css" />
-    <link rel="stylesheet" href="peta_ngawi/css/leaflet-measure.css" />
+    <link rel="stylesheet" href="Peta_Ngawi/css/leaflet.css" />
+    <link rel="stylesheet" href="Peta_Ngawi/css/L.Control.Layers.Tree.css" />
+    <link rel="stylesheet" href="Peta_Ngawi/css/qgis2web.css" />
+    <link rel="stylesheet" href="Peta_Ngawi/css/fontawesome-all.min.css" />
+    <link rel="stylesheet" href="Peta_Ngawi/css/leaflet.photon.css" />
+    <link rel="stylesheet" href="Peta_Ngawi/css/leaflet-measure.css" />
 
     <style>
       /* --- OVERRIDE QGIS CSS: Mengembalikan fungsi scroll & Set Base Hitam --- */
@@ -46,7 +46,7 @@
         opacity: 0.35;
       }
 
-      /* CSS Variables untuk Tema Terang/Gelap */
+      /* CSS Variables - Diubah ke RGBA agar sedikit transparan (Glassmorphism) */
       :root {
         --bg-body: rgba(248, 249, 250, 0.85);
         --text-main: #212529;
@@ -597,20 +597,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
-    <script src="peta_ngawi/js/qgis2web_expressions.js"></script>
-    <script src="peta_ngawi/js/leaflet.js"></script>
-    <script src="peta_ngawi/js/L.Control.Layers.Tree.min.js"></script>
-    <script src="peta_ngawi/js/leaflet.rotatedMarker.js"></script>
-    <script src="peta_ngawi/js/leaflet.pattern.js"></script>
-    <script src="peta_ngawi/js/leaflet-hash.js"></script>
-    <script src="peta_ngawi/js/Autolinker.min.js"></script>
-    <script src="peta_ngawi/js/rbush.min.js"></script>
-    <script src="peta_ngawi/js/labelgun.min.js"></script>
-    <script src="peta_ngawi/js/labels.js"></script>
-    <script src="peta_ngawi/js/leaflet.photon.js"></script>
-    <script src="peta_ngawi/js/leaflet-measure.js"></script>
+    <script src="Peta_Ngawi/js/qgis2web_expressions.js"></script>
+    <script src="Peta_Ngawi/js/leaflet.js"></script>
+    <script src="Peta_Ngawi/js/L.Control.Layers.Tree.min.js"></script>
+    <script src="Peta_Ngawi/js/leaflet.rotatedMarker.js"></script>
+    <script src="Peta_Ngawi/js/leaflet.pattern.js"></script>
+    <script src="Peta_Ngawi/js/leaflet-hash.js"></script>
+    <script src="Peta_Ngawi/js/Autolinker.min.js"></script>
+    <script src="Peta_Ngawi/js/rbush.min.js"></script>
+    <script src="Peta_Ngawi/js/labelgun.min.js"></script>
+    <script src="Peta_Ngawi/js/labels.js"></script>
+    <script src="Peta_Ngawi/js/leaflet.photon.js"></script>
+    <script src="Peta_Ngawi/js/leaflet-measure.js"></script>
     <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
-    <script src="peta_ngawi/data/kab_ngawi_3.js"></script>
+    <script src="Peta_Ngawi/data/kab_ngawi_3.js"></script>
 
     <script>
       // --- ROTASI HEADER ---
@@ -625,14 +625,28 @@
 
       // --- THEME TOGGLE ---
       const themeSlider = document.getElementById("theme-slider");
+      const bodyElement = document.body;
+
       themeSlider.addEventListener("change", () => {
-        document.body.classList.toggle("dark-theme", themeSlider.checked);
+        if (themeSlider.checked) {
+          bodyElement.classList.add("dark-theme");
+        } else {
+          bodyElement.classList.remove("dark-theme");
+        }
       });
 
       // --- GALLERY SCROLL ---
       const galleryContainer = document.getElementById("gallery-container");
-      document.getElementById("slide-left").onclick = () => galleryContainer.scrollBy({ left: -320, behavior: "smooth" });
-      document.getElementById("slide-right").onclick = () => galleryContainer.scrollBy({ left: 320, behavior: "smooth" });
+      const slideLeftBtn = document.getElementById("slide-left");
+      const slideRightBtn = document.getElementById("slide-right");
+      if (slideLeftBtn && slideRightBtn && galleryContainer) {
+        slideLeftBtn.addEventListener("click", () => {
+          galleryContainer.scrollBy({ left: -320, behavior: "smooth" });
+        });
+        slideRightBtn.addEventListener("click", () => {
+          galleryContainer.scrollBy({ left: 320, behavior: "smooth" });
+        });
+      }
 
       // --- INISIALISASI PETA ---
       var initialBounds = [
@@ -703,7 +717,7 @@
 
       L.control.layers({ Gelap: darkLayer, Terang: lightLayer, Satelit: satLayer }, { "Batas Kab. Ngawi": layer_kab_ngawi_3, Wisata: wisataLayer, Kuliner: kulinerLayer }, { collapsed: true }).addTo(map);
 
-      // Tambahkan Sub-judul Panel (Fitur kamu yang tadi hilang)
+      // Tambahkan Sub-judul Panel
       var baseCont = document.querySelector(".leaflet-control-layers-base");
       if (baseCont) {
         var t1 = document.createElement("div");
@@ -717,7 +731,7 @@
         overCont.insertBefore(t2, overCont.firstChild);
       }
 
-      // North Arrow (Fitur kamu yang tadi hilang)
+      // North Arrow
       var NorthArrow = L.Control.extend({
         options: { position: "topright" },
         onAdd: function (map) {
@@ -732,7 +746,7 @@
       });
       map.addControl(new NorthArrow());
 
-      // Koordinat (Fitur kamu yang tadi hilang)
+      // Koordinat
       var Coords = L.Control.extend({
         options: { position: "bottomright" },
         onAdd: function (map) {
