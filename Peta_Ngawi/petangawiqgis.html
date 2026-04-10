@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Peta Ngawi - Hasil Ekspor QGIS</title>
+
+    <link rel="stylesheet" href="peta_ngawi/css/leaflet.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/L.Control.Layers.Tree.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/qgis2web.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/fontawesome-all.min.css" />
+
+    <style>
+      html,
+      body,
+      #map {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="peta_ngawi/js/qgis2web_expressions.js"></script>
+    <script src="peta_ngawi/js/leaflet.js"></script>
+    <script src="peta_ngawi/js/L.Control.Layers.Tree.min.js"></script>
+    <script src="peta_ngawi/js/leaflet.rotatedMarker.js"></script>
+    <script src="peta_ngawi/js/leaflet.pattern.js"></script>
+    <script src="peta_ngawi/js/leaflet-hash.js"></script>
+    <script src="peta_ngawi/js/Autolinker.min.js"></script>
+    <script src="peta_ngawi/js/rbush.min.js"></script>
+    <script src="peta_ngawi/js/labelgun.min.js"></script>
+    <script src="peta_ngawi/js/labels.js"></script>
+
+    <script src="peta_ngawi/data/kab_ngawi_3.js"></script>
+
+    <script>
+      // --- INISIALISASI PETA SESUAI EKSPOR QGIS ---
+      var map = L.map("map", {
+        zoomControl: true,
+        maxZoom: 28,
+        minZoom: 1,
+      }).fitBounds([
+        [-7.7865435414197695, 110.88943727988428],
+        [-7.194992263444783, 111.8467426603296],
+      ]);
+
+      var hash = L.hash(map);
+      map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+
+      var autolinker = new Autolinker({ truncate: { length: 30, location: "smart" } });
+
+      // --- MENAMBAHKAN PANE AGAR POLIGON DI ATAS BASEMAP ---
+      map.createPane("pane_kab_ngawi_3");
+      map.getPane("pane_kab_ngawi_3").style.zIndex = 403;
+      map.getPane("pane_kab_ngawi_3").style["mix-blend-mode"] = "normal";
+
+      // --- FUNGSI POPUP ---
+      function pop_kab_ngawi_3(feature, layer) {
+        var popupContent =
+          '<table>\
+                <tr>\
+                    <td colspan="2">' +
+          (feature.properties["NAMOBJ"] !== null ? autolinker.link(feature.properties["NAMOBJ"].toLocaleString()) : "") +
+          "</td>\
+                </tr>\
+            </table>";
+        layer.bindPopup(popupContent, { maxHeight: 400 });
+      }
+
+      // --- GAYA POLIGON (Turquoise Menyala) ---
+      function style_kab_ngawi_3_0() {
+        return {
+          pane: "pane_kab_ngawi_3",
+          opacity: 1,
+          color: "rgba(72,209,204,1.0)", // Turquoise menyala
+          dashArray: "",
+          lineCap: "butt",
+          lineJoin: "miter",
+          weight: 3.0,
+          fill: true,
+          fillOpacity: 0.3,
+          fillColor: "rgba(0,139,139,1.0)", // Teal transparan
+          interactive: true,
+        };
+      }
+
+      // --- MENAMBAHKAN LAPISAN POLIGON ---
+      var layer_kab_ngawi_3 = new L.geoJson(json_kab_ngawi_3, {
+        attribution: "",
+        interactive: true,
+        dataVar: "json_kab_ngawi_3",
+        layerName: "layer_kab_ngawi_3",
+        pane: "pane_kab_ngawi_3",
+        onEachFeature: pop_kab_ngawi_3,
+        style: style_kab_ngawi_3_0,
+      });
+
+      bounds_group.addLayer(layer_kab_ngawi_3);
+      map.addLayer(layer_kab_ngawi_3);
+
+      // --- MENAMBAHKAN BASEMAP (Agar ada konteks lokasi) ---
+      var layer_DarkMatter_0 = L.tileLayer("https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", {
+        opacity: 1.0,
+        maxZoom: 28,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      });
+      map.addLayer(layer_DarkMatter_0);
+
+      // --- KONTROL LAYER ---
+      var baseMaps = { "Basemap Gelap": layer_DarkMatter_0 };
+      L.control.layers(baseMaps, { "Batas Wilayah": layer_kab_ngawi_3 }, { collapsed: false }).addTo(map);
+
+      setupLTree(); // Menjalankan tree layers jika ada
+    </script>
+  </body>
+</html>
