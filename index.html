@@ -9,18 +9,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel="stylesheet" />
-    <link rel="stylesheet" href="Peta_Ngawi/css/leaflet.css" />
-    <link rel="stylesheet" href="Peta_Ngawi/css/L.Control.Layers.Tree.css" />
-    <link rel="stylesheet" href="Peta_Ngawi/css/qgis2web.css" />
-    <link rel="stylesheet" href="Peta_Ngawi/css/fontawesome-all.min.css" />
-    <link rel="stylesheet" href="Peta_Ngawi/css/leaflet.photon.css" />
-    <link rel="stylesheet" href="Peta_Ngawi/css/leaflet-measure.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/leaflet.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/L.Control.Layers.Tree.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/qgis2web.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/fontawesome-all.min.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/leaflet.photon.css" />
+    <link rel="stylesheet" href="peta_ngawi/css/leaflet-measure.css" />
 
     <style>
-      /* --- TETAP PAKAI STYLING ASLI KAMU --- */
+      /* --- OVERRIDE QGIS CSS: Mengembalikan fungsi scroll & Set Base Hitam --- */
       html {
         background-color: #000000;
       }
+
       html,
       body {
         height: auto !important;
@@ -29,6 +30,7 @@
         scroll-behavior: smooth;
       }
 
+      /* --- BACKGROUND PARALLAX SELURUH WEBSITE --- */
       body::before {
         content: "";
         position: fixed;
@@ -44,6 +46,7 @@
         opacity: 0.35;
       }
 
+      /* CSS Variables untuk Tema Terang/Gelap */
       :root {
         --bg-body: rgba(248, 249, 250, 0.85);
         --text-main: #212529;
@@ -55,6 +58,7 @@
         --card-bg: rgba(255, 255, 255, 0.9);
       }
 
+      /* Default Dark Theme */
       body.dark-theme {
         --bg-body: rgba(10, 10, 10, 0.85);
         --text-main: #ffffff;
@@ -70,19 +74,27 @@
         background-color: var(--bg-body);
         color: var(--text-main);
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        transition: 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
       }
+
       .text-accent {
         color: var(--accent-color) !important;
       }
       .bg-panel {
         background-color: var(--bg-panel);
         backdrop-filter: blur(8px);
-        transition: 0.3s;
+        -webkit-backdrop-filter: blur(8px);
+        transition: background-color 0.3s;
       }
+
+      /* Navbar Custom */
       .navbar {
         background: var(--nav-bg) !important;
         backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: background 0.3s;
         border-bottom: 1px solid var(--border-color);
       }
       .navbar .nav-link {
@@ -97,6 +109,7 @@
         letter-spacing: 2px;
       }
 
+      /* --- SLIDER TEMA GELAP/TERANG --- */
       .theme-switch {
         position: relative;
         display: inline-block;
@@ -118,11 +131,11 @@
         bottom: 0;
         background-color: #ccc;
         transition: 0.4s;
-        border-radius: 34px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 0 8px;
+        border-radius: 34px;
       }
       .slider:before {
         position: absolute;
@@ -142,7 +155,18 @@
       input:checked + .slider:before {
         transform: translateX(34px);
       }
+      .sun-icon {
+        color: #f39c12;
+        font-size: 14px;
+        z-index: 1;
+      }
+      .moon-icon {
+        color: #f1c40f;
+        font-size: 14px;
+        z-index: 1;
+      }
 
+      /* Hero Section - Slideshow Otomatis */
       .hero-section {
         position: relative;
         padding: 150px 0 100px 0;
@@ -187,6 +211,7 @@
         letter-spacing: 2px;
       }
 
+      /* Tombol Jelajahi */
       .btn-explore {
         background-color: var(--accent-color);
         color: var(--bg-panel);
@@ -195,8 +220,6 @@
         font-weight: bold;
         letter-spacing: 1px;
         transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
       }
       .btn-explore:hover {
         background-color: #ffffff;
@@ -204,15 +227,16 @@
         transform: translateY(-5px);
       }
 
-      /* Perbaikan: Map harus memiliki tinggi yang pasti */
+      /* Map Section */
       #map {
         height: 600px;
         width: 100%;
         border-radius: 12px;
-        border: 2px solid var(--border-color);
+        border: 1px solid var(--border-color);
         z-index: 1;
       }
 
+      /* Cards Section */
       .tour-card {
         background-color: var(--card-bg);
         border: 1px solid var(--border-color);
@@ -240,18 +264,85 @@
         color: #fff;
       }
 
-      .leaflet-popup-content-wrapper {
+      /* --- OVERRIDE TEMA UNTUK KONTROL PETA --- */
+      .leaflet-bar a,
+      .leaflet-control-layers,
+      .leaflet-control-layers-expanded,
+      .leaflet-control-measure,
+      .leaflet-control-measure .leaflet-control-measure-interaction,
+      .leaflet-control-measure .leaflet-control-measure-toggle,
+      .leaflet-touch .leaflet-control-measure .leaflet-control-measure-toggle,
+      .leaflet-control-fullscreen a,
+      .info.legend,
+      .leaflet-control-coordinates,
+      .leaflet-popup-content-wrapper,
+      .leaflet-popup-tip {
         background-color: var(--bg-panel) !important;
         color: var(--text-main) !important;
+        border-color: var(--border-color) !important;
+        backdrop-filter: blur(8px);
       }
+      .leaflet-bar a:hover,
+      .leaflet-control-measure .leaflet-control-measure-toggle:hover,
+      .leaflet-touch .leaflet-control-measure .leaflet-control-measure-toggle:hover {
+        background-color: var(--border-color) !important;
+        color: var(--accent-color) !important;
+      }
+      .leaflet-popup-content,
+      .leaflet-control-layers label,
+      .leaflet-control-measure .leaflet-control-measure-interaction label,
+      .leaflet-control-measure .leaflet-control-measure-interaction .tasks a,
+      .leaflet-popup-content table td {
+        color: var(--text-main) !important;
+      }
+      .leaflet-control-scale-line {
+        background-color: var(--bg-panel) !important;
+        color: var(--text-main) !important;
+        border-color: var(--border-color) !important;
+      }
+      .leaflet-control-measure,
+      .leaflet-control-measure h3,
+      .leaflet-control-measure p,
+      .leaflet-control-measure span,
+      .leaflet-control-measure .results .heading {
+        color: var(--text-main) !important;
+      }
+      .leaflet-control-measure .results .group {
+        border-top-color: var(--border-color) !important;
+      }
+      .leaflet-control-measure a.start,
+      .leaflet-control-measure a.cancel,
+      .leaflet-control-measure a.finish,
+      .leaflet-popup-content .tasks a {
+        color: var(--accent-color) !important;
+        text-decoration: none;
+      }
+      .leaflet-control-measure a.start:hover,
+      .leaflet-control-measure a.cancel:hover,
+      .leaflet-control-measure a.finish:hover,
+      .leaflet-popup-content .tasks a:hover {
+        color: var(--text-main) !important;
+      }
+      .leaflet-popup-content h3,
+      .leaflet-popup-content p {
+        color: var(--text-main) !important;
+      }
+      .dynamic-text {
+        color: var(--text-main) !important;
+      }
+
+      /* --- KUSTOMISASI GAMBAR POPUP --- */
       .popup-image {
         width: 100%;
         height: 150px;
         object-fit: cover;
         border-radius: 6px;
         margin-bottom: 10px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
 
+      /* --- HORIZONTAL SCROLL GALLERY --- */
       .horizontal-gallery {
         display: flex;
         overflow-x: auto;
@@ -259,6 +350,7 @@
         padding-bottom: 1rem;
         scroll-snap-type: x mandatory;
         scrollbar-width: none;
+        -ms-overflow-style: none;
       }
       .horizontal-gallery::-webkit-scrollbar {
         display: none;
@@ -270,6 +362,7 @@
         scroll-snap-align: start;
       }
 
+      /* --- TOMBOL NAVIGASI GALERI --- */
       .gallery-wrapper {
         position: relative;
       }
@@ -289,6 +382,13 @@
         justify-content: center;
         cursor: pointer;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s;
+        font-size: 1.2rem;
+      }
+      .gallery-nav-btn:hover {
+        background-color: var(--text-main);
+        color: var(--bg-panel);
+        transform: translateY(-50%) scale(1.1);
       }
       .gallery-nav-btn.left {
         left: -10px;
@@ -296,23 +396,38 @@
       .gallery-nav-btn.right {
         right: -10px;
       }
+      @media (max-width: 768px) {
+        .gallery-nav-btn {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body class="dark-theme">
     <nav class="navbar navbar-expand-lg fixed-top">
       <div class="container">
-        <a class="navbar-brand text-accent d-flex align-items-center" href="#"> <img src="Logo_Website.png" alt="Logo" style="height: 35px; width: auto; margin-right: 12px" /> Geo-NgaWiKu </a>
-        <div class="collapse navbar-collapse justify-content-end">
+        <a class="navbar-brand text-accent d-flex align-items-center" href="#">
+          <img src="Logo_Website.png" alt="Logo Geo-NgaWiKu" style="height: 35px; width: auto; margin-right: 0.2px" />
+          Geo-NgaWiKu
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul class="navbar-nav align-items-center">
             <li class="nav-item"><a class="nav-link" href="#beranda">Beranda</a></li>
             <li class="nav-item"><a class="nav-link" href="#deskripsi">Deskripsi</a></li>
             <li class="nav-item"><a class="nav-link" href="#peta-section">Peta</a></li>
             <li class="nav-item"><a class="nav-link" href="#galeri">Galeri</a></li>
             <li class="nav-item"><a class="nav-link" href="https://xavierhilmy06-wq.github.io/Test-CV-SIG-WEB/" target="_blank">Tentang Saya</a></li>
-            <li class="nav-item">
-              <label class="theme-switch">
+
+            <li class="nav-item d-flex align-items-center">
+              <label class="theme-switch" title="Ganti Tema">
                 <input type="checkbox" id="theme-slider" checked />
-                <span class="slider"><i class="bi bi-sun-fill"></i><i class="bi bi-moon-stars-fill"></i></span>
+                <span class="slider">
+                  <i class="bi bi-sun-fill sun-icon"></i>
+                  <i class="bi bi-moon-stars-fill moon-icon"></i>
+                </span>
               </label>
             </li>
           </ul>
@@ -327,192 +442,297 @@
         <div class="slide" style="background-image: url(&quot;Kuliner_Header.jpg&quot;)"></div>
         <div class="slide-overlay"></div>
       </div>
+
       <div class="container position-relative" style="z-index: 2">
-        <h1 class="hero-title text-accent">Geo-NgaWiKu</h1>
-        <p class="lead mt-4 opacity-75"><strong>Geospasial Ngawi Wisata Dan Kuliner.</strong> Sistem Informasi Geografis interaktif Ngawi Ramah.</p>
-        <a href="#peta-section" class="btn btn-explore mt-3">JELAJAHI SEKARANG <i class="bi bi-arrow-down-circle ms-2"></i></a>
+        <div class="row">
+          <div class="col-lg-8">
+            <h1 class="hero-title text-accent">Geo-NgaWiKu</h1>
+            <p class="lead mt-4 opacity-75">
+              <strong>Geospasial Ngawi Wisata Dan Kuliner.</strong> Sistem Informasi Geografis interaktif untuk memetakan surga wisata alam, peninggalan sejarah, dan cita rasa kuliner legendaris di Kabupaten Ngawi.
+            </p>
+            <a href="#peta-section" class="btn btn-explore mt-3">JELAJAHI SEKARANG <i class="bi bi-arrow-down-circle ms-2"></i></a>
+          </div>
+        </div>
       </div>
     </section>
 
     <section id="deskripsi" class="py-5 bg-panel">
       <div class="container py-4 text-center">
         <h2 class="text-accent fw-bold mb-4">TENTANG WEBSITE INI</h2>
-        <p class="lead">Geo-NgaWiKu merangkum keindahan alam dan cita rasa legendaris Ngawi dalam satu peta interaktif cerdas.</p>
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <p class="lead dynamic-text">
+              <strong>Geo-NgaWiKu (Geospasial Ngawi Wisata Dan Kuliner)</strong> Ngawi menyimpan sejuta cerita dari megahnya peninggalan sejarah Benteng Van Den Bosch, sejuknya embun di Kebun Teh Jamus, hingga nikmatnya seporsi Tepo Tahu
+              legendaris. Geo-NgaWiKu (Geospasial Ngawi Wisata & Kuliner) hadir sebagai jendela digital yang merangkum semua kekayaan tersebut. Lebih dari sekadar direktori biasa, platform ini adalah peta interaktif cerdas yang siap memandu
+              setiap langkah petualangan dan penjelajahan rasamu di bumi Ngawi Ramah.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 
     <section id="peta-section" class="py-5">
       <div class="container">
-        <h2 class="text-accent fw-bold text-center mb-5">PETA ADMINISTRATIF KABUPATEN NGAWI</h2>
-        <div id="map"></div>
+        <div class="text-center mb-5">
+          <h2 class="text-accent fw-bold tracking-wide">PETA INTERAKTIF NGAWI</h2>
+          <p class="dynamic-text opacity-75">Data Geospasial Kabupaten Ngawi</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+          <div class="col-lg-12">
+            <div id="map"></div>
+          </div>
+        </div>
       </div>
     </section>
 
     <section id="galeri" class="py-5 bg-panel">
       <div class="container py-4">
-        <h2 class="text-accent fw-bold text-center mb-5">GALERI DESTINASI</h2>
+        <div class="text-center mb-5">
+          <h2 class="text-accent fw-bold">GALERI DESTINASI</h2>
+        </div>
         <div class="gallery-wrapper">
           <button id="slide-left" class="gallery-nav-btn left"><i class="bi bi-chevron-left"></i></button>
           <button id="slide-right" class="gallery-nav-btn right"><i class="bi bi-chevron-right"></i></button>
+
           <div class="horizontal-gallery" id="gallery-container">
             <div class="col-10">
-              <div class="card tour-card">
-                <img src="Jamus_Peta.jpg" class="card-img" />
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="Jamus_Peta.jpg" class="card-img" alt="Kebun Teh Jamus" onerror="this.src = 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop'" />
                 <div class="card-img-overlay">
-                  <h5 class="fw-bold">Kebun Teh Jamus</h5>
-                  <p class="small text-accent">Wisata Alam</p>
+                  <h5 class="card-title fw-bold">Kebun Teh Jamus</h5>
+                  <p class="card-text small text-accent">Wisata Alam</p>
                 </div>
-              </div>
+              </a>
             </div>
             <div class="col-10">
-              <div class="card tour-card">
-                <img src="BentengPendem_Peta.jpeg" class="card-img" />
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="BentengPendem_Peta.jpeg" class="card-img" alt="Benteng Van Den Bosch" onerror="this.src = 'https://images.unsplash.com/photo-1565675405022-774f9d2a149c?q=80&w=1964&auto=format&fit=crop'" />
                 <div class="card-img-overlay">
-                  <h5 class="fw-bold">Benteng Van Den Bosch</h5>
-                  <p class="small text-accent">Wisata Sejarah</p>
+                  <h5 class="card-title fw-bold">Benteng Van Den Bosch</h5>
+                  <p class="card-text small text-accent">Wisata Sejarah</p>
                 </div>
-              </div>
+              </a>
             </div>
             <div class="col-10">
-              <div class="card tour-card">
-                <img src="Srambang_Peta.jpg" class="card-img" />
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="Srambang_Peta.jpg" class="card-img" alt="Air Terjun Srambang" onerror="this.src = 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?q=80&w=1887&auto=format&fit=crop'" />
                 <div class="card-img-overlay">
-                  <h5 class="fw-bold">Air Terjun Srambang</h5>
-                  <p class="small text-accent">Wisata Alam</p>
+                  <h5 class="card-title fw-bold">Air Terjun Srambang</h5>
+                  <p class="card-text small text-accent">Wisata Alam</p>
                 </div>
-              </div>
+              </a>
             </div>
             <div class="col-10">
-              <div class="card tour-card">
-                <img src="PecelLethok_Peta.jpg" class="card-img" />
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="Trinil_Peta.jpg" class="card-img" alt="Museum Purbakala Trinil" />
                 <div class="card-img-overlay">
-                  <h5 class="fw-bold">Pecel Lethok Mbah Jan</h5>
-                  <p class="small text-accent">Kuliner</p>
+                  <h5 class="card-title fw-bold">Museum Purbakala Trinil</h5>
+                  <p class="card-text small text-accent">Wisata Sejarah</p>
                 </div>
-              </div>
+              </a>
             </div>
             <div class="col-10">
-              <div class="card tour-card">
-                <img src="TahuTepo_Peta.jpg" class="card-img" />
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="Tawun_Map.jpg" class="card-img" alt="Taman Wisata Tawun" />
                 <div class="card-img-overlay">
-                  <h5 class="fw-bold">Tahu Tepo Mbah Nem</h5>
-                  <p class="small text-accent">Kuliner</p>
+                  <h5 class="card-title fw-bold">Taman Wisata Tawun</h5>
+                  <p class="card-text small text-accent">Wisata Rekreasi</p>
                 </div>
-              </div>
+              </a>
+            </div>
+            <div class="col-10">
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="PecelLethok_Peta.jpg" class="card-img" alt="Pecel Lethok Mbah Jan" />
+                <div class="card-img-overlay">
+                  <h5 class="card-title fw-bold">Pecel Lethok Mbah Jan</h5>
+                  <p class="card-text small text-accent">Kuliner</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-10">
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="TahuTepo_Peta.jpg" class="card-img" alt="Tahu Tepo Mbah Nem" />
+                <div class="card-img-overlay">
+                  <h5 class="card-title fw-bold">Tahu Tepo Mbah Nem</h5>
+                  <p class="card-text small text-accent">Kuliner</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-10">
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="WarungBuMarni_Peta.webp" class="card-img" alt="Warung Bu Marni" />
+                <div class="card-img-overlay">
+                  <h5 class="card-title fw-bold">Warung Bu Marni</h5>
+                  <p class="card-text small text-accent">Kuliner</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-10">
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="BotokTawon_Peta.webp" class="card-img" alt="Botok Tawon Prandon" />
+                <div class="card-img-overlay">
+                  <h5 class="card-title fw-bold">Botok Tawon Prandon</h5>
+                  <p class="card-text small text-accent">Kuliner</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-10">
+              <a href="#" target="_blank" class="card tour-card text-decoration-none">
+                <img src="Cemue_Peta.webp" class="card-img" alt="Wedang Cemue" />
+                <div class="card-img-overlay">
+                  <h5 class="card-title fw-bold">Wedang Cemue</h5>
+                  <p class="card-text small text-accent">Kuliner</p>
+                </div>
+              </a>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <footer class="text-center py-4 bg-panel border-top">
-      <p class="mb-0 opacity-75">© 2026 Xavier Hilmy Algasa. SV UGM.</p>
+    <footer class="text-center py-4 bg-panel border-top" style="border-color: var(--border-color) !important">
+      <p class="mb-0 dynamic-text opacity-75">© 2026 Xavier Hilmy Algasa. Hak Cipta Dilindungi. Teknologi Survei dan Pemetaan Dasar, Sekolah Vokasi Universitas Gadjah Mada.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
-    <script src="Peta_Ngawi/js/qgis2web_expressions.js"></script>
-    <script src="Peta_Ngawi/js/leaflet.js"></script>
-    <script src="Peta_Ngawi/js/L.Control.Layers.Tree.min.js"></script>
-    <script src="Peta_Ngawi/js/leaflet-hash.js"></script>
-    <script src="Peta_Ngawi/js/Autolinker.min.js"></script>
-    <script src="Peta_Ngawi/js/rbush.min.js"></script>
-    <script src="Peta_Ngawi/js/labelgun.min.js"></script>
-    <script src="Peta_Ngawi/js/labels.js"></script>
-    <script src="Peta_Ngawi/js/leaflet-measure.js"></script>
+    <script src="peta_ngawi/js/qgis2web_expressions.js"></script>
+    <script src="peta_ngawi/js/leaflet.js"></script>
+    <script src="peta_ngawi/js/L.Control.Layers.Tree.min.js"></script>
+    <script src="peta_ngawi/js/leaflet.rotatedMarker.js"></script>
+    <script src="peta_ngawi/js/leaflet.pattern.js"></script>
+    <script src="peta_ngawi/js/leaflet-hash.js"></script>
+    <script src="peta_ngawi/js/Autolinker.min.js"></script>
+    <script src="peta_ngawi/js/rbush.min.js"></script>
+    <script src="peta_ngawi/js/labelgun.min.js"></script>
+    <script src="peta_ngawi/js/labels.js"></script>
+    <script src="peta_ngawi/js/leaflet.photon.js"></script>
+    <script src="peta_ngawi/js/leaflet-measure.js"></script>
     <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
-    <script src="Peta_Ngawi/data/kab_ngawi_3.js"></script>
+    <script src="peta_ngawi/data/kab_ngawi_3.js"></script>
 
     <script>
-      // Header Slideshow
+      // --- ROTASI HEADER ---
       const slides = document.querySelectorAll(".hero-slideshow .slide");
       let currentSlide = 0;
-      setInterval(() => {
+      function nextSlide() {
         slides[currentSlide].classList.remove("active");
         currentSlide = (currentSlide + 1) % slides.length;
         slides[currentSlide].classList.add("active");
-      }, 5000);
+      }
+      setInterval(nextSlide, 5000);
 
-      // Theme Slider
-      document.getElementById("theme-slider").addEventListener("change", (e) => {
-        document.body.classList.toggle("dark-theme", e.target.checked);
+      // --- THEME TOGGLE ---
+      const themeSlider = document.getElementById("theme-slider");
+      themeSlider.addEventListener("change", () => {
+        document.body.classList.toggle("dark-theme", themeSlider.checked);
       });
 
-      // Gallery Control
-      const galCont = document.getElementById("gallery-container");
-      document.getElementById("slide-left").onclick = () => galCont.scrollBy({ left: -320, behavior: "smooth" });
-      document.getElementById("slide-right").onclick = () => galCont.scrollBy({ left: 320, behavior: "smooth" });
+      // --- GALLERY SCROLL ---
+      const galleryContainer = document.getElementById("gallery-container");
+      document.getElementById("slide-left").onclick = () => galleryContainer.scrollBy({ left: -320, behavior: "smooth" });
+      document.getElementById("slide-right").onclick = () => galleryContainer.scrollBy({ left: 320, behavior: "smooth" });
 
       // --- INISIALISASI PETA ---
       var initialBounds = [
-        [-7.7865, 110.8894],
-        [-7.1949, 111.8467],
+        [-7.7865435414197695, 110.88943727988428],
+        [-7.194992263444783, 111.8467426603296],
       ];
-      // Pastikan memanggil ID "map"
-      var map = L.map("map", { zoomControl: false, fullscreenControl: true }).fitBounds(initialBounds);
+      var map = L.map("map", { zoomControl: false, maxZoom: 28, minZoom: 1, fullscreenControl: true }).fitBounds(initialBounds);
+
+      var hash = new L.Hash(map);
+      map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> · <a href="https://leafletjs.com">Leaflet</a>');
+      var autolinker = new Autolinker({ truncate: { length: 30, location: "smart" } });
+
       L.control.zoom({ position: "topleft" }).addTo(map);
 
-      // Reset Home Button
+      // Reset View Button
       var HomeBtn = L.Control.extend({
         options: { position: "topleft" },
         onAdd: function (map) {
-          var btn = L.DomUtil.create("div", "leaflet-bar leaflet-control");
-          btn.innerHTML = '<a href="#" style="display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="bi bi-house-door-fill"></i></a>';
-          btn.onclick = function (e) {
+          var container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+          var button = L.DomUtil.create("a", "", container);
+          button.innerHTML = '<i class="bi bi-house-door-fill"></i>';
+          button.style.display = "flex";
+          button.style.alignItems = "center";
+          button.style.justifyContent = "center";
+          button.onclick = function (e) {
             e.preventDefault();
             map.fitBounds(initialBounds);
           };
-          return btn;
+          return container;
         },
       });
       map.addControl(new HomeBtn());
+
+      // Measure Control
+      var measureControl = new L.Control.Measure({
+        position: "topleft",
+        primaryLengthUnit: "meters",
+        secondaryLengthUnit: "kilometers",
+        primaryAreaUnit: "sqmeters",
+        secondaryAreaUnit: "hectares",
+      }).addTo(map);
+      var measureIcon = document.querySelector(".leaflet-control-measure-toggle");
+      if (measureIcon) {
+        measureIcon.innerHTML = '<i class="bi bi-rulers"></i>';
+        measureIcon.style.display = "flex";
+        measureIcon.style.alignItems = "center";
+        measureIcon.style.justifyContent = "center";
+      }
 
       // Basemaps
       var darkLayer = L.tileLayer("https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png").addTo(map);
       var lightLayer = L.tileLayer("https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png");
       var satLayer = L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}");
 
-      // Poligon Ngawi (Mengambil variabel dari kab_ngawi_3.js)
-      var layer_kab_ngawi_3 = L.geoJson(json_kab_ngawi_3, {
-        style: { color: "#48d1cc", weight: 3, fillOpacity: 0.2, fillColor: "#008b8b" },
-        onEachFeature: function (feature, layer) {
-          layer.bindPopup("<strong>" + (feature.properties["NAMOBJ"] || "Kabupaten Ngawi") + "</strong>");
-        },
+      // Poligon Ngawi
+      function pop_kab_ngawi_3(feature, layer) {
+        layer.bindPopup("<strong>" + (feature.properties["NAMOBJ"] || "Kabupaten Ngawi") + "</strong>", { maxHeight: 400 });
+      }
+      var layer_kab_ngawi_3 = new L.geoJson(json_kab_ngawi_3, {
+        interactive: true,
+        onEachFeature: pop_kab_ngawi_3,
+        style: { color: "#48d1cc", weight: 2.0, fill: true, fillOpacity: 0.2, fillColor: "#008b8b" },
       }).addTo(map);
 
+      // Groups for Layers
       var wisataLayer = L.layerGroup().addTo(map);
       var kulinerLayer = L.layerGroup().addTo(map);
 
-      L.control.layers({ Gelap: darkLayer, Terang: lightLayer, Satelit: satLayer }, { "Batas Ngawi": layer_kab_ngawi_3, Wisata: wisataLayer, Kuliner: kulinerLayer }, { collapsed: true }).addTo(map);
+      L.control.layers({ Gelap: darkLayer, Terang: lightLayer, Satelit: satLayer }, { "Batas Kab. Ngawi": layer_kab_ngawi_3, Wisata: wisataLayer, Kuliner: kulinerLayer }, { collapsed: true }).addTo(map);
 
-      // Markers from Google Sheets
-      const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQS6uHLdNWl0SXlR437h-60vEOeXuXnQAvM_wlr-gyFBMjSJutswtbROPZugSpeBh2szxa2d0HrFPco/pub?output=csv";
-      Papa.parse(sheetUrl, {
-        download: true,
-        skipEmptyLines: true,
-        complete: function (results) {
-          results.data.slice(1).forEach((cols) => {
-            if (cols.length < 5) return;
-            const lat = parseFloat(cols[2]),
-              lon = parseFloat(cols[1]);
-            const isWisata = cols[3].toLowerCase() === "wisata";
-            const markerIcon = L.divIcon({
-              html: `<div style="background:${isWisata ? "#48d1cc" : "#ff4757"};width:32px;height:32px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 0 10px rgba(0,0,0,0.5)"><i class="bi ${isWisata ? "bi-camera-fill" : "bi-shop"}"></i></div>`,
-              className: "",
-              iconSize: [32, 32],
-            });
-            const popupContent = `<div style="text-align:center"><img src="${cols[5]}" class="popup-image" onerror="this.style.display='none'"><h6>${cols[0]}</h6><p style="font-size:12px;text-align:left;">${cols[4]}</p></div>`;
-            L.marker([lat, lon], { icon: markerIcon })
-              .bindPopup(popupContent, { minWidth: 220 })
-              .addTo(isWisata ? wisataLayer : kulinerLayer);
-          });
+      // Tambahkan Sub-judul Panel (Fitur kamu yang tadi hilang)
+      var baseCont = document.querySelector(".leaflet-control-layers-base");
+      if (baseCont) {
+        var t1 = document.createElement("div");
+        t1.innerHTML = '<strong style="color:var(--accent-color);font-size:13px;">PILIHAN BASEMAP</strong>';
+        baseCont.insertBefore(t1, baseCont.firstChild);
+      }
+      var overCont = document.querySelector(".leaflet-control-layers-overlays");
+      if (overCont) {
+        var t2 = document.createElement("div");
+        t2.innerHTML = '<strong style="color:var(--accent-color);font-size:13px;margin-top:10px;display:block;">DATA & LOKASI</strong>';
+        overCont.insertBefore(t2, overCont.firstChild);
+      }
+
+      // North Arrow (Fitur kamu yang tadi hilang)
+      var NorthArrow = L.Control.extend({
+        options: { position: "topright" },
+        onAdd: function (map) {
+          var div = L.DomUtil.create("div", "info legend");
+          div.style.padding = "5px";
+          div.style.border = "2px solid var(--border-color)";
+          div.style.borderRadius = "5px";
+          div.style.textAlign = "center";
+          div.innerHTML = '<i class="bi bi-caret-up-fill" style="font-size: 24px; color: var(--accent-color);"></i><br><strong style="color: var(--text-main);">U</strong>';
+          return div;
         },
       });
+      map.addControl(new NorthArrow());
 
-      // Fitur Tambahan Kamu: Koordinat, Skala, dll
-      L.control.scale({ metric: true, imperial: false, position: "bottomleft" }).addTo(map);
-
+      // Koordinat (Fitur kamu yang tadi hilang)
       var Coords = L.Control.extend({
         options: { position: "bottomright" },
         onAdd: function (map) {
@@ -530,6 +750,39 @@
         },
       });
       map.addControl(new Coords());
+
+      // Load Markers from Google Sheets
+      const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQS6uHLdNWl0SXlR437h-60vEOeXuXnQAvM_wlr-gyFBMjSJutswtbROPZugSpeBh2szxa2d0HrFPco/pub?output=csv";
+      Papa.parse(sheetUrl, {
+        download: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          results.data.slice(1).forEach((cols) => {
+            if (cols.length < 5) return;
+            const nama = cols[0],
+              lon = parseFloat(cols[1]),
+              lat = parseFloat(cols[2]),
+              kategori = cols[3].trim().toLowerCase(),
+              deskripsi = cols[4],
+              gbr = cols[5] ? cols[5].trim() : "";
+            if (isNaN(lat) || isNaN(lon)) return;
+            let color = kategori === "wisata" ? "#48d1cc" : "#ff4757";
+            let icon = kategori === "wisata" ? "bi-camera-fill" : "bi-shop";
+            const mIcon = L.divIcon({
+              html: `<div style="background-color:${color}; width:32px; height:32px; border-radius:50%; border:2px solid #fff; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px;"><i class="bi ${icon}"></i></div>`,
+              className: "",
+              iconSize: [32, 32],
+              iconAnchor: [16, 16],
+              popupAnchor: [0, -16],
+            });
+            let phtml = `<div style="text-align: center;">${gbr ? `<img src="${gbr}" class="popup-image">` : ""}<h6 style="color:${color}; font-weight:bold;">${nama}</h6><p style="margin:0; font-size:12px; text-align: left;">${deskripsi}</p></div>`;
+            const marker = L.marker([lat, lon], { icon: mIcon }).bindPopup(phtml, { minWidth: 220 });
+            (kategori === "wisata" ? wisataLayer : kulinerLayer).addLayer(marker);
+          });
+        },
+      });
+
+      L.control.scale({ metric: true, imperial: false, position: "bottomleft" }).addTo(map);
     </script>
   </body>
 </html>
